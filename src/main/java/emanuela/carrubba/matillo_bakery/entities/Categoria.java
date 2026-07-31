@@ -1,4 +1,7 @@
 package emanuela.carrubba.matillo_bakery.entities;
 
-public class Prodotti {
+public enum Categoria {
+PANE,
+    DOLCI,
+    PIZZE
 }
