@@ -92,4 +92,16 @@ public class Ordine {
     public void setDettagli(List<DettaglioOrdine> dettagli) {
         this.dettagli = dettagli;
     }
+
+    @Override
+    public String toString() {
+        return "Ordine{" +
+                "uuid=" + uuid +
+                ", utente=" + utente +
+                ", totale=" + totale +
+                ", stato=" + stato +
+                ", dataOrdine=" + dataOrdine +
+                ", dettagli=" + dettagli +
+                '}';
+    }
 }

@@ -106,4 +106,18 @@ public class Prodotto {
     public void setDisponibile(boolean disponibile) {
         this.disponibile = disponibile;
     }
+
+    @Override
+    public String toString() {
+        return "Prodotto{" +
+                "uuid=" + uuid +
+                ", nome='" + nome + '\'' +
+                ", prezzo=" + prezzo +
+                ", quantità=" + quantità +
+                ", descrizione='" + descrizione + '\'' +
+                ", categoria=" + categoria +
+                ", immagine='" + immagine + '\'' +
+                ", disponibile=" + disponibile +
+                '}';
+    }
 }

@@ -22,7 +22,7 @@ public class ProdottoService {
     }
 
     public List<Prodotto> trovaDisponibili(){
-        return prodottoRepository.finByDisponibileTrue();
+        return prodottoRepository.findByDisponibileTrue();
     }
     public List<Prodotto> findByCategoria(Categoria categoria){
         return prodottoRepository.findByCategoria(categoria);

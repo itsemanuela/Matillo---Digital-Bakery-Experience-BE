@@ -63,4 +63,14 @@ public class DettaglioOrdine {
     public void setPrezzoUnitario(double prezzoUnitario) {
         this.prezzoUnitario = prezzoUnitario;
     }
+
+    @Override
+    public String toString() {
+        return "DettaglioOrdine{" +
+                "uuid=" + uuid +
+                ", prodotto=" + prodotto +
+                ", quantita=" + quantita +
+                ", prezzoUnitario=" + prezzoUnitario +
+                '}';
+    }
 }

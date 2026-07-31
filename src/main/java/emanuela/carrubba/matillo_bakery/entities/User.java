@@ -124,5 +124,21 @@ public class User {
         public void setCreatedAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
         }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "uuid=" + uuid +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", nome='" + nome + '\'' +
+                ", cognome='" + cognome + '\'' +
+                ", indirizzo='" + indirizzo + '\'' +
+                ", citta='" + citta + '\'' +
+                ", cap='" + cap + '\'' +
+                ", telefono='" + telefono + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
     }
+}
 
