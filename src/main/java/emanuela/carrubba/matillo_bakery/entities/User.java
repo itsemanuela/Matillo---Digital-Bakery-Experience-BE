@@ -5,12 +5,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "utenti")
 public class User {
-
-    @Entity
-    @Table(name = "utenti")
-    public class Utente {
-
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         private UUID uuid;
@@ -36,11 +33,11 @@ public class User {
         private LocalDateTime createdAt = LocalDateTime.now();
 
 
-        public Utente() {
+        public User() {
         }
 
 
-        public Utente(String email, String password, String nome, String cognome) {
+        public User(String email, String password, String nome, String cognome) {
             this.email = email;
             this.password = password;
             this.nome = nome;
@@ -128,4 +125,4 @@ public class User {
             this.createdAt = createdAt;
         }
     }
-}
+
