@@ -1,4 +1,131 @@
 package emanuela.carrubba.matillo_bakery.entities;
 
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 public class User {
+
+    @Entity
+    @Table(name = "utenti")
+    public class Utente {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.UUID)
+        private UUID uuid;
+
+        @Column(nullable = false, unique = true)
+        private String email;
+
+        @Column(nullable = false)
+        private String password;
+
+        @Column(nullable = false)
+        private String nome;
+
+        @Column(nullable = false)
+        private String cognome;
+
+        private String indirizzo;
+        private String citta;
+        private String cap;
+        private String telefono;
+
+        @Column(name = "created_at", nullable = false, updatable = false)
+        private LocalDateTime createdAt = LocalDateTime.now();
+
+
+        public Utente() {
+        }
+
+
+        public Utente(String email, String password, String nome, String cognome) {
+            this.email = email;
+            this.password = password;
+            this.nome = nome;
+            this.cognome = cognome;
+        }
+
+
+        public UUID getUuid() {
+            return uuid;
+        }
+
+        public void setUuid(UUID uuid) {
+            this.uuid = uuid;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getNome() {
+            return nome;
+        }
+
+        public void setNome(String nome) {
+            this.nome = nome;
+        }
+
+        public String getCognome() {
+            return cognome;
+        }
+
+        public void setCognome(String cognome) {
+            this.cognome = cognome;
+        }
+
+        public String getIndirizzo() {
+            return indirizzo;
+        }
+
+        public void setIndirizzo(String indirizzo) {
+            this.indirizzo = indirizzo;
+        }
+
+        public String getCitta() {
+            return citta;
+        }
+
+        public void setCitta(String citta) {
+            this.citta = citta;
+        }
+
+        public String getCap() {
+            return cap;
+        }
+
+        public void setCap(String cap) {
+            this.cap = cap;
+        }
+
+        public String getTelefono() {
+            return telefono;
+        }
+
+        public void setTelefono(String telefono) {
+            this.telefono = telefono;
+        }
+
+        public LocalDateTime getCreatedAt() {
+            return createdAt;
+        }
+
+        public void setCreatedAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+        }
+    }
 }
