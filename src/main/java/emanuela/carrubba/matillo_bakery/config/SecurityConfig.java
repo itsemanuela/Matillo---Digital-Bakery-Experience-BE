@@ -54,14 +54,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
+                        // Pubblici: chiunque può leggere il catalogo, registrarsi, fare login
                         .requestMatchers(HttpMethod.GET, "/api/prodotti/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/utenti").permitAll()
+                        // Checkout ospite: la creazione di un ordine non richiede login.
+                        .requestMatchers(HttpMethod.POST, "/api/ordini").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/prodotti/**").hasRole("ADMIN")
-
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

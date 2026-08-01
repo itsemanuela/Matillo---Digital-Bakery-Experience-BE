@@ -15,11 +15,18 @@ public class Ordine {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uuid;
 
-    // Utente che ha effettuato l'ordine
+    // Utente che ha effettuato l'ordine — NULLABLE: un ordine da ospite
+    // (senza login) non ha nessun utente collegato.
     @ManyToOne
-    @JoinColumn(name = "utente_uuid", nullable = false)
+    @JoinColumn(name = "utente_uuid", nullable = true)
     private User utente;
 
+    // Dati di contatto per gli ordini da OSPITE (utente == null).
+
+    private String nomeCliente;
+    private String cognomeCliente;
+    private String emailCliente;
+    private String telefonoCliente;
 
     @Column(name = "indirizzo_spedizione", nullable = false)
     private String indirizzoSpedizione;
@@ -41,18 +48,24 @@ public class Ordine {
     @JoinColumn(name = "ordine_uuid")
     private List<DettaglioOrdine> dettagli;
 
-    // Costruttore vuoto
+
     public Ordine() {}
 
-    public Ordine(User utente, double totale, List<DettaglioOrdine> dettagli) {
+    public Ordine(User utente, String indirizzoSpedizione, String note, double totale, List<DettaglioOrdine> dettagli) {
         this.utente = utente;
+        this.indirizzoSpedizione = indirizzoSpedizione;
+        this.note = note;
         this.totale = totale;
         this.dettagli = dettagli;
     }
 
-
-    public Ordine(User utente, String indirizzoSpedizione, String note, double totale, List<DettaglioOrdine> dettagli) {
-        this.utente = utente;
+    // Costruttore per ordine da OSPITE (utente = null, dati di contatto valorizzati a mano)
+    public Ordine(String nomeCliente, String cognomeCliente, String emailCliente, String telefonoCliente,
+                  String indirizzoSpedizione, String note, double totale, List<DettaglioOrdine> dettagli) {
+        this.nomeCliente = nomeCliente;
+        this.cognomeCliente = cognomeCliente;
+        this.emailCliente = emailCliente;
+        this.telefonoCliente = telefonoCliente;
         this.indirizzoSpedizione = indirizzoSpedizione;
         this.note = note;
         this.totale = totale;
@@ -74,6 +87,38 @@ public class Ordine {
 
     public void setUtente(User utente) {
         this.utente = utente;
+    }
+
+    public String getNomeCliente() {
+        return nomeCliente;
+    }
+
+    public void setNomeCliente(String nomeCliente) {
+        this.nomeCliente = nomeCliente;
+    }
+
+    public String getCognomeCliente() {
+        return cognomeCliente;
+    }
+
+    public void setCognomeCliente(String cognomeCliente) {
+        this.cognomeCliente = cognomeCliente;
+    }
+
+    public String getEmailCliente() {
+        return emailCliente;
+    }
+
+    public void setEmailCliente(String emailCliente) {
+        this.emailCliente = emailCliente;
+    }
+
+    public String getTelefonoCliente() {
+        return telefonoCliente;
+    }
+
+    public void setTelefonoCliente(String telefonoCliente) {
+        this.telefonoCliente = telefonoCliente;
     }
 
     public String getIndirizzoSpedizione() {
@@ -129,6 +174,8 @@ public class Ordine {
         return "Ordine{" +
                 "uuid=" + uuid +
                 ", utente=" + utente +
+                ", nomeCliente='" + nomeCliente + '\'' +
+                ", emailCliente='" + emailCliente + '\'' +
                 ", indirizzoSpedizione='" + indirizzoSpedizione + '\'' +
                 ", note='" + note + '\'' +
                 ", totale=" + totale +

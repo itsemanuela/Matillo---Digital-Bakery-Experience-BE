@@ -1,5 +1,6 @@
 package emanuela.carrubba.matillo_bakery.RequestDTO;
 
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,6 +15,13 @@ public record OrdineRequestDTO(
 
         @NotEmpty(message = "L'ordine deve contenere almeno un prodotto")
         @Valid
-        List<DettaglioOrdineRequestDTO> dettagli
+        List<DettaglioOrdineRequestDTO> dettagli,
+
+        // Campi SOLO per checkout da ospite (utente non loggato).
+
+        String nomeCliente,
+        String cognomeCliente,
+        String emailCliente,
+        String telefonoCliente
 ) {
 }
