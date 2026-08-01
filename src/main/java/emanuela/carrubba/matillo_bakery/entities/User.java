@@ -1,6 +1,7 @@
 package emanuela.carrubba.matillo_bakery.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import emanuela.carrubba.matillo_bakery.RuoloUtente;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -9,130 +10,143 @@ import java.util.UUID;
 @Entity
 @Table(name = "utenti")
 public class User {
-        @Id
-        @GeneratedValue(strategy = GenerationType.UUID)
-        private UUID uuid;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID uuid;
 
-        @Column(nullable = false, unique = true)
-        private String email;
-
-        @Column(nullable = false)
-        @JsonIgnore
-        private String password;
-
-        @Column(nullable = false)
-        private String nome;
-
-        @Column(nullable = false)
-        private String cognome;
+    @Column(nullable = false, unique = true)
+    private String email;
 
     @Column(nullable = false)
-        private String indirizzo;
+    @JsonIgnore
+    private String password;
 
     @Column(nullable = false)
-        private String citta;
+    private String nome;
 
     @Column(nullable = false)
-        private String cap;
+    private String cognome;
 
     @Column(nullable = false)
-        private String telefono;
+    private String indirizzo;
 
-        @Column(name = "created_at", nullable = false, updatable = false)
-        private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false)
+    private String citta;
 
+    @Column(nullable = false)
+    private String cap;
 
-        public User() {
-        }
-
-
-        public User(String email, String password, String nome, String cognome) {
-            this.email = email;
-            this.password = password;
-            this.nome = nome;
-            this.cognome = cognome;
-        }
+    @Column(nullable = false)
+    private String telefono;
 
 
-        public UUID getUuid() {
-            return uuid;
-        }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RuoloUtente ruolo = RuoloUtente.CLIENTE;
 
-        public void setUuid(UUID uuid) {
-            this.uuid = uuid;
-        }
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-        public String getEmail() {
-            return email;
-        }
 
-        public void setEmail(String email) {
-            this.email = email;
-        }
+    public User() {
+    }
 
-        public String getPassword() {
-            return password;
-        }
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
+    public User(String email, String password, String nome, String cognome) {
+        this.email = email;
+        this.password = password;
+        this.nome = nome;
+        this.cognome = cognome;
+    }
 
-        public String getNome() {
-            return nome;
-        }
 
-        public void setNome(String nome) {
-            this.nome = nome;
-        }
+    public UUID getUuid() {
+        return uuid;
+    }
 
-        public String getCognome() {
-            return cognome;
-        }
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 
-        public void setCognome(String cognome) {
-            this.cognome = cognome;
-        }
+    public String getEmail() {
+        return email;
+    }
 
-        public String getIndirizzo() {
-            return indirizzo;
-        }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-        public void setIndirizzo(String indirizzo) {
-            this.indirizzo = indirizzo;
-        }
+    public String getPassword() {
+        return password;
+    }
 
-        public String getCitta() {
-            return citta;
-        }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-        public void setCitta(String citta) {
-            this.citta = citta;
-        }
+    public String getNome() {
+        return nome;
+    }
 
-        public String getCap() {
-            return cap;
-        }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-        public void setCap(String cap) {
-            this.cap = cap;
-        }
+    public String getCognome() {
+        return cognome;
+    }
 
-        public String getTelefono() {
-            return telefono;
-        }
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
+    }
 
-        public void setTelefono(String telefono) {
-            this.telefono = telefono;
-        }
+    public String getIndirizzo() {
+        return indirizzo;
+    }
 
-        public LocalDateTime getCreatedAt() {
-            return createdAt;
-        }
+    public void setIndirizzo(String indirizzo) {
+        this.indirizzo = indirizzo;
+    }
 
-        public void setCreatedAt(LocalDateTime createdAt) {
-            this.createdAt = createdAt;
-        }
+    public String getCitta() {
+        return citta;
+    }
+
+    public void setCitta(String citta) {
+        this.citta = citta;
+    }
+
+    public String getCap() {
+        return cap;
+    }
+
+    public void setCap(String cap) {
+        this.cap = cap;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public RuoloUtente getRuolo() {
+        return ruolo;
+    }
+
+    public void setRuolo(RuoloUtente ruolo) {
+        this.ruolo = ruolo;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     @Override
     public String toString() {
@@ -146,8 +160,8 @@ public class User {
                 ", citta='" + citta + '\'' +
                 ", cap='" + cap + '\'' +
                 ", telefono='" + telefono + '\'' +
+                ", ruolo=" + ruolo +
                 ", createdAt=" + createdAt +
                 '}';
     }
 }
-

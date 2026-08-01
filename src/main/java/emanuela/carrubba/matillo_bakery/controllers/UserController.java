@@ -1,6 +1,7 @@
 package emanuela.carrubba.matillo_bakery.controllers;
 
 import emanuela.carrubba.matillo_bakery.RequestDTO.UtenteRequestDTO;
+import emanuela.carrubba.matillo_bakery.ResponseDTO.UtenteResponseDTO;
 import emanuela.carrubba.matillo_bakery.entities.User;
 import emanuela.carrubba.matillo_bakery.services.UserService;
 import jakarta.validation.Valid;
@@ -50,7 +51,7 @@ public class UserController {
     //  BCrypt prima del salvataggio:
 
     @PostMapping
-    public ResponseEntity<User> createUtente(@Valid @RequestBody UtenteRequestDTO dto) {
+    public ResponseEntity<UtenteResponseDTO> createUtente(@Valid @RequestBody UtenteRequestDTO dto){
         User user = new User();
         user.setNome(dto.nome());
         user.setCognome(dto.cognome());
@@ -62,7 +63,7 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(dto.password()));
 
         User salvato = userService.salvaUtente(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvato);
+        return ResponseEntity.status(HttpStatus.CREATED).body(UtenteResponseDTO.fromEntity(salvato));
     }
 
 
