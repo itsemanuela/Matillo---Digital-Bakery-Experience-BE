@@ -2,6 +2,7 @@ package emanuela.carrubba.matillo_bakery.entities;
 
 import emanuela.carrubba.matillo_bakery.StatoOrdine;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,12 @@ public class Ordine {
     @ManyToOne
     @JoinColumn(name = "utente_uuid", nullable = false)
     private User utente;
+
+
+    @Column(name = "indirizzo_spedizione", nullable = false)
+    private String indirizzoSpedizione;
+
+    private String note;
 
     @Column(nullable = false)
     private double totale;
@@ -37,9 +44,17 @@ public class Ordine {
     // Costruttore vuoto
     public Ordine() {}
 
-
     public Ordine(User utente, double totale, List<DettaglioOrdine> dettagli) {
         this.utente = utente;
+        this.totale = totale;
+        this.dettagli = dettagli;
+    }
+
+
+    public Ordine(User utente, String indirizzoSpedizione, String note, double totale, List<DettaglioOrdine> dettagli) {
+        this.utente = utente;
+        this.indirizzoSpedizione = indirizzoSpedizione;
+        this.note = note;
         this.totale = totale;
         this.dettagli = dettagli;
     }
@@ -59,6 +74,22 @@ public class Ordine {
 
     public void setUtente(User utente) {
         this.utente = utente;
+    }
+
+    public String getIndirizzoSpedizione() {
+        return indirizzoSpedizione;
+    }
+
+    public void setIndirizzoSpedizione(String indirizzoSpedizione) {
+        this.indirizzoSpedizione = indirizzoSpedizione;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public double getTotale() {
@@ -98,6 +129,8 @@ public class Ordine {
         return "Ordine{" +
                 "uuid=" + uuid +
                 ", utente=" + utente +
+                ", indirizzoSpedizione='" + indirizzoSpedizione + '\'' +
+                ", note='" + note + '\'' +
                 ", totale=" + totale +
                 ", stato=" + stato +
                 ", dataOrdine=" + dataOrdine +
