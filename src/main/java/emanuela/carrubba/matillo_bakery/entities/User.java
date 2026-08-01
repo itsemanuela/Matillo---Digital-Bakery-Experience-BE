@@ -24,9 +24,16 @@ public class User {
         @Column(nullable = false)
         private String cognome;
 
+    @Column(nullable = false)
         private String indirizzo;
+
+    @Column(nullable = false)
         private String citta;
+
+    @Column(nullable = false)
         private String cap;
+
+    @Column(nullable = false)
         private String telefono;
 
         @Column(name = "created_at", nullable = false, updatable = false)

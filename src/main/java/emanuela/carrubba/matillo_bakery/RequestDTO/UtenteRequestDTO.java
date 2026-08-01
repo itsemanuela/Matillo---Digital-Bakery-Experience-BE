@@ -19,6 +19,14 @@ public record UtenteRequestDTO (
         @Size(min = 6, message = "La password deve essere di almeno 6 caratteri")
         String password,
 
+        @NotBlank(message = "Il campo telefono è vuoto!")
         String telefono,
-        String indirizzo
+        @NotBlank(message = "L'indirizzo per la spedizione è obbligatorio!")
+        String indirizzo,
+
+        @NotBlank(message= "Il cap è obbligatorio!")
+        String cap,
+
+        @NotBlank(message = "La città è obbligatoria!")
+        String città
 ) {}
