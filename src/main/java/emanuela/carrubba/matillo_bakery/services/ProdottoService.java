@@ -48,4 +48,8 @@ public Prodotto aggiornaProdotto(UUID uuid, Prodotto prodottoAggiornato){
     prodottoEsistente.setDisponibile(prodottoAggiornato.isDisponibile());
     return prodottoRepository.save(prodottoEsistente);
 }
+
+public Prodotto singoloProdotto(UUID uuid ){
+        return prodottoRepository.findById(uuid).orElseThrow(()->new NotFoundException("Prodotto con id" + " " + uuid + "non trovato!"));
+}
 }
