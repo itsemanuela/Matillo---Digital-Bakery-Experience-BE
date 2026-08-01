@@ -2,6 +2,7 @@ package emanuela.carrubba.matillo_bakery.services;
 
 import emanuela.carrubba.matillo_bakery.entities.Ordine;
 import emanuela.carrubba.matillo_bakery.entities.User;
+import emanuela.carrubba.matillo_bakery.exceptions.NotFoundException;
 import emanuela.carrubba.matillo_bakery.repositories.OrdineRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -22,7 +23,7 @@ public class OrdineService {
 
     public Ordine trovaPerId(UUID uuid) {
         return ordineRepository.findById(uuid)
-                .orElseThrow(() -> new RuntimeException("Ordine non trovato con id: " + uuid));
+                .orElseThrow(() -> new NotFoundException("Ordine non trovato con id: " + uuid));
     }
 
     public List<Ordine> trovaPerUtente(User utente) {
