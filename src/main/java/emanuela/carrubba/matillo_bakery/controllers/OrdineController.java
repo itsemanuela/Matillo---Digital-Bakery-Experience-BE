@@ -15,6 +15,7 @@ import emanuela.carrubba.matillo_bakery.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +41,7 @@ public class OrdineController {
         this.emailSender = emailSender;
     }
 
-    // GET /api/ordini — lista completa
-    // TODO: in futuro andrebbe riservata solo agli admin con hasRole("ADMIN"))
+    // GET /api/ordini — lista completa (riservata ad ADMIN, vedi SecurityConfig)
     @GetMapping
     public ResponseEntity<List<Ordine>> getAllOrdini() {
         return ResponseEntity.ok(ordineService.trovaTutti());
@@ -50,14 +50,55 @@ public class OrdineController {
     @GetMapping("/{id}")
     public ResponseEntity<Ordine> getOrdineById(@PathVariable UUID id) {
         Ordine ordine = ordineService.trovaPerId(id);
+
+        if (!isAdminOProprietario(ordine)) {
+            throw new AccessDeniedException("Non hai i permessi per visualizzare questo ordine.");
+        }
+
         return ResponseEntity.ok(ordine);
     }
+
+    // GET /api/ordini/utente/{utenteId} — riservato ad ADMIN
 
     @GetMapping("/utente/{utenteId}")
     public ResponseEntity<List<Ordine>> getOrdiniByUtente(@PathVariable UUID utenteId) {
         User utente = userService.trovaPerId(utenteId);
         List<Ordine> ordini = ordineService.trovaPerUtente(utente);
         return ResponseEntity.ok(ordini);
+    }
+
+    // GET /api/ordini/me — gli ordini dell'utente attualmente loggato,
+
+    @GetMapping("/me")
+    public ResponseEntity<List<Ordine>> getMieiOrdini() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User utente = userService.trovaPerEmail(email);
+        List<Ordine> ordini = ordineService.trovaPerUtente(utente);
+        return ResponseEntity.ok(ordini);
+    }
+
+
+    private boolean isAdminOProprietario(Ordine ordine) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false;
+        }
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (isAdmin) {
+            return true;
+        }
+
+        if (ordine.getUtente() == null) {
+            // Ordine da ospite: nessun account collegato
+
+            return false;
+        }
+
+        String emailRichiedente = authentication.getName();
+        return ordine.getUtente().getEmail().equals(emailRichiedente);
     }
 
     // POST /api/ordini — pubblico: funziona sia per utenti loggati sia per ospiti.
@@ -96,15 +137,13 @@ public class OrdineController {
         Ordine ordine;
 
         if (isLoggato) {
-            // authentication.getName() è l'email, impostata come "subject" del
-            // token dentro JwtAuthFilter — vedi JwtService.generaToken.
+
             String email = authentication.getName();
             User utente = userService.trovaPerEmail(email);
 
             ordine = new Ordine(utente, dto.indirizzoSpedizione(), dto.note(), totale, dettagli);
         } else {
-            // Validazione manuale dei dati ospite: qui, non nel DTO,
-            // perché sono obbligatori SOLO in questo ramo.
+            // Validazione manuale dei dati ospite
             if (isBlank(dto.nomeCliente()) || isBlank(dto.cognomeCliente())
                     || isBlank(dto.emailCliente()) || isBlank(dto.telefonoCliente())) {
                 throw new IllegalArgumentException(
@@ -125,8 +164,8 @@ public class OrdineController {
         return ResponseEntity.status(HttpStatus.CREATED).body(salvato);
     }
 
-    // Invio email se fallisce l'ordine resta comunque salvato
-    // correttamente
+    // Invio email
+
     private void inviaEmailConferma(Ordine ordine) {
         try {
             String email = ordine.getUtente() != null

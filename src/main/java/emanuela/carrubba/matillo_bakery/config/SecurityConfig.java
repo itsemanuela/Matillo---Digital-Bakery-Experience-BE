@@ -33,6 +33,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // TODO: aggiungere qui anche i domini reali quando fai il deploy
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://127.0.0.1:5173"
@@ -67,10 +68,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/prodotti/**").hasRole("ADMIN")
 
-                        // Solo ADMIN può vedere TUTTI gli ordini, cambiarne lo stato, o eliminarli.
+                        // Solo ADMIN può vedere TUTTI gli ordini
+
                         .requestMatchers(HttpMethod.GET, "/api/ordini").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/ordini/utente/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/ordini/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/ordini/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
