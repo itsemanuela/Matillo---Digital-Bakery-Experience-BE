@@ -38,7 +38,7 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "http://127.0.0.1:5173"
         ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
@@ -60,9 +60,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/utenti").permitAll()
                         // Checkout ospite: la creazione di un ordine non richiede login.
                         .requestMatchers(HttpMethod.POST, "/api/ordini").permitAll()
+
+                        // Solo ADMIN può modificare il catalogo
                         .requestMatchers(HttpMethod.POST, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/prodotti/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/ordini").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/ordini/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/ordini/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

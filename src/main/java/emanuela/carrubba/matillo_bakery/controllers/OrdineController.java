@@ -2,6 +2,7 @@ package emanuela.carrubba.matillo_bakery.controllers;
 
 import emanuela.carrubba.matillo_bakery.RequestDTO.DettaglioOrdineRequestDTO;
 import emanuela.carrubba.matillo_bakery.RequestDTO.OrdineRequestDTO;
+import emanuela.carrubba.matillo_bakery.RequestDTO.OrdineStatoRequestDTO;
 import emanuela.carrubba.matillo_bakery.exceptions.QuantitaNonDisponibileException;
 import emanuela.carrubba.matillo_bakery.entities.DettaglioOrdine;
 import emanuela.carrubba.matillo_bakery.entities.Ordine;
@@ -35,7 +36,7 @@ public class OrdineController {
         this.prodottoService = prodottoService;
     }
 
-    // GET /api/ordini — lista completa (protetta da SecurityConfig, autenticazione richiesta;
+    // GET /api/ordini — lista completa
     // TODO: in futuro andrebbe riservata solo agli admin con hasRole("ADMIN"))
     @GetMapping
     public ResponseEntity<List<Ordine>> getAllOrdini() {
@@ -56,13 +57,6 @@ public class OrdineController {
     }
 
     // POST /api/ordini — pubblico: funziona sia per utenti loggati sia per ospiti.
-    //
-    // Come si determina chi sta ordinando:
-    // - Se la richiesta ha un token JWT valido (header Authorization), JwtAuthFilter
-    //   ha già popolato il SecurityContext prima che la richiesta arrivi qui: in quel
-    //   caso leggiamo l'email dal token e colleghiamo l'ordine all'utente reale.
-    // - Altrimenti (nessun token, richiesta anonima) tratto l'ordine come da OSPITE:
-    //   servono nomeCliente/cognomeCliente/emailCliente/telefonoCliente nel body,
 
     @PostMapping
     public ResponseEntity<Ordine> createOrdine(@Valid @RequestBody OrdineRequestDTO dto) {
@@ -98,7 +92,8 @@ public class OrdineController {
         Ordine ordine;
 
         if (isLoggato) {
-        
+            // authentication.getName() è l'email, impostata come "subject" del
+            // token dentro JwtAuthFilter — vedi JwtService.generaToken.
             String email = authentication.getName();
             User utente = userService.trovaPerEmail(email);
 
@@ -120,6 +115,19 @@ public class OrdineController {
 
         Ordine salvato = ordineService.salva(ordine);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvato);
+    }
+
+    // PATCH /api/ordini/{id}/stato — aggiorna solo lo stato di un ordine
+
+    @PatchMapping("/{id}/stato")
+    public ResponseEntity<Ordine> updateStato(
+            @PathVariable UUID id,
+            @Valid @RequestBody OrdineStatoRequestDTO dto) {
+
+        Ordine ordine = ordineService.trovaPerId(id);
+        ordine.setStato(dto.stato());
+        Ordine aggiornato = ordineService.salva(ordine);
+        return ResponseEntity.ok(aggiornato);
     }
 
     @DeleteMapping("/{id}")
