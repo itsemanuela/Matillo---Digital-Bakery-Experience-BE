@@ -1,5 +1,6 @@
 package emanuela.carrubba.matillo_bakery.controllers;
 
+import emanuela.carrubba.matillo_bakery.Tools.EmailSender;
 import emanuela.carrubba.matillo_bakery.RequestDTO.DettaglioOrdineRequestDTO;
 import emanuela.carrubba.matillo_bakery.RequestDTO.OrdineRequestDTO;
 import emanuela.carrubba.matillo_bakery.RequestDTO.OrdineStatoRequestDTO;
@@ -29,11 +30,14 @@ public class OrdineController {
     private final OrdineService ordineService;
     private final UserService userService;
     private final ProdottoService prodottoService;
+    private final EmailSender emailSender;
 
-    public OrdineController(OrdineService ordineService, UserService userService, ProdottoService prodottoService) {
+    public OrdineController(OrdineService ordineService, UserService userService,
+                            ProdottoService prodottoService, EmailSender emailSender) {
         this.ordineService = ordineService;
         this.userService = userService;
         this.prodottoService = prodottoService;
+        this.emailSender = emailSender;
     }
 
     // GET /api/ordini — lista completa
@@ -99,7 +103,8 @@ public class OrdineController {
 
             ordine = new Ordine(utente, dto.indirizzoSpedizione(), dto.note(), totale, dettagli);
         } else {
-
+            // Validazione manuale dei dati ospite: qui, non nel DTO,
+            // perché sono obbligatori SOLO in questo ramo.
             if (isBlank(dto.nomeCliente()) || isBlank(dto.cognomeCliente())
                     || isBlank(dto.emailCliente()) || isBlank(dto.telefonoCliente())) {
                 throw new IllegalArgumentException(
@@ -114,7 +119,41 @@ public class OrdineController {
         }
 
         Ordine salvato = ordineService.salva(ordine);
+
+        inviaEmailConferma(salvato);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(salvato);
+    }
+
+    // Invio email se fallisce l'ordine resta comunque salvato
+    // correttamente
+    private void inviaEmailConferma(Ordine ordine) {
+        try {
+            String email = ordine.getUtente() != null
+                    ? ordine.getUtente().getEmail()
+                    : ordine.getEmailCliente();
+            String nome = ordine.getUtente() != null
+                    ? ordine.getUtente().getNome()
+                    : ordine.getNomeCliente();
+
+            StringBuilder prodottiHtml = new StringBuilder();
+            for (DettaglioOrdine dettaglio : ordine.getDettagli()) {
+                double subtotale = dettaglio.getPrezzoUnitario() * dettaglio.getQuantita();
+                prodottiHtml.append("""
+                        <tr>
+                          <td style="padding: 8px 10px; color: #555; font-size: 14px;">%dx %s</td>
+                          <td style="padding: 8px 10px; text-align: right; color: #555; font-size: 14px;">€ %.2f</td>
+                        </tr>
+                        """.formatted(dettaglio.getQuantita(), dettaglio.getProdotto().getNome(), subtotale));
+            }
+
+            emailSender.sendOrderConfirmationEmail(
+                    email, nome, ordine.getUuid(), prodottiHtml.toString(), ordine.getTotale()
+            );
+        } catch (Exception e) {
+            System.err.println("[OrdineController] Invio email di conferma fallito per l'ordine "
+                    + ordine.getUuid() + ": " + e.getMessage());
+        }
     }
 
     // PATCH /api/ordini/{id}/stato — aggiorna solo lo stato di un ordine

@@ -110,7 +110,7 @@
 			<groupId>com.konghq</groupId>
 			<artifactId>unirest-java-core</artifactId>
 			<version>4.10.0</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<!-- Source: https://mvnrepository.com/artifact/com.konghq/unirest-objectmapper-jackson -->
 		<dependency>
@@ -118,6 +118,10 @@
 			<artifactId>unirest-objectmapper-jackson</artifactId>
 			<version>4.2.9</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 	</dependencies>
 
