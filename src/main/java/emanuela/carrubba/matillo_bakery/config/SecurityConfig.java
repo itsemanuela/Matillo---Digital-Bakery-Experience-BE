@@ -33,7 +33,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // TODO: aggiungere qui anche i domini reali quando fai il deploy
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://127.0.0.1:5173"
@@ -52,6 +51,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Pubblici: chiunque può leggere il catalogo, registrarsi, fare login
@@ -64,7 +64,10 @@ public class SecurityConfig {
                         // Solo ADMIN può modificare il catalogo
                         .requestMatchers(HttpMethod.POST, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/prodotti/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/prodotti/**").hasRole("ADMIN")
+
+                        // Solo ADMIN può vedere TUTTI gli ordini, cambiarne lo stato, o eliminarli.
                         .requestMatchers(HttpMethod.GET, "/api/ordini").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/ordini/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/ordini/**").hasRole("ADMIN")

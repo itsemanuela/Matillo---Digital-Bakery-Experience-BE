@@ -44,6 +44,7 @@ public class ProdottoController {
     }
 
     // GET /api/prodotti/{id} — dettaglio singolo prodotto
+
     @GetMapping("/{id}")
     public ResponseEntity<Prodotto> getProdottoById(@PathVariable UUID id) {
         Prodotto prodotto = prodottoService.trovaPerId(id);
@@ -55,6 +56,24 @@ public class ProdottoController {
     public ResponseEntity<Prodotto> createProdotto(@RequestBody Prodotto prodotto) {
         Prodotto salvato = prodottoService.salvaProdotto(prodotto);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvato);
+    }
+
+    // PATCH /api/prodotti/{id}/bestseller
+
+    @PatchMapping("/{id}/bestseller")
+    public ResponseEntity<Prodotto> setBestseller(@PathVariable UUID id) {
+        List<Prodotto> tutti = prodottoService.findAll();
+        for (Prodotto p : tutti) {
+            if (p.isBestseller() && !p.getUuid().equals(id)) {
+                p.setBestseller(false);
+                prodottoService.salvaProdotto(p);
+            }
+        }
+
+        Prodotto prodotto = prodottoService.trovaPerId(id);
+        prodotto.setBestseller(true);
+        Prodotto aggiornato = prodottoService.salvaProdotto(prodotto);
+        return ResponseEntity.ok(aggiornato);
     }
 
     // POST /api/prodotti/{id}/immagine — carica/sostituisce l'immagine di un prodotto esistente
@@ -71,6 +90,7 @@ public class ProdottoController {
     }
 
     // PUT /api/prodotti/{id} — aggiorna i dati di un prodotto esistente
+
     @PutMapping("/{id}")
     public ResponseEntity<Prodotto> updateProdotto(
             @PathVariable UUID id,
@@ -80,8 +100,7 @@ public class ProdottoController {
         return ResponseEntity.ok(salvato);
     }
 
-    // DELETE /api/prodotti/{id} — rimuove un prodotto
-    // lo recupero prima con trovaPerId.
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProdotto(@PathVariable UUID id) {
         Prodotto prodotto = prodottoService.trovaPerId(id);

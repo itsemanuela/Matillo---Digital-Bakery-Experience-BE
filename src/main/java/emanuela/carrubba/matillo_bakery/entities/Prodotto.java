@@ -1,6 +1,7 @@
 package emanuela.carrubba.matillo_bakery.entities;
 
 import jakarta.persistence.*;
+
 import java.util.UUID;
 
 @Entity
@@ -30,6 +31,9 @@ public class Prodotto {
 
     @Column(nullable = false)
     private boolean disponibile = true;
+
+    @Column(nullable = false)
+    private boolean bestseller = false;
 
     public Prodotto(String nome, double prezzo, int quantità, String descrizione, Categoria categoria) {
         this.nome = nome;
@@ -107,6 +111,14 @@ public class Prodotto {
         this.disponibile = disponibile;
     }
 
+    public boolean isBestseller() {
+        return bestseller;
+    }
+
+    public void setBestseller(boolean bestseller) {
+        this.bestseller = bestseller;
+    }
+
     @Override
     public String toString() {
         return "Prodotto{" +
@@ -118,6 +130,7 @@ public class Prodotto {
                 ", categoria=" + categoria +
                 ", immagine='" + immagine + '\'' +
                 ", disponibile=" + disponibile +
+                ", bestseller=" + bestseller +
                 '}';
     }
 }
