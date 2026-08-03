@@ -21,7 +21,7 @@ public class Prodotto {
     @Column(nullable = false)
     private int quantità;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 5000)
     private String descrizione;
 
     @Enumerated(EnumType.STRING)

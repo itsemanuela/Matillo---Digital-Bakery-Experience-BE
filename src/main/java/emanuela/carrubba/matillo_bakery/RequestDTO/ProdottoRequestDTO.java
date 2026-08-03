@@ -1,6 +1,7 @@
 package emanuela.carrubba.matillo_bakery.RequestDTO;
 
 import emanuela.carrubba.matillo_bakery.entities.Categoria;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -20,6 +21,7 @@ public record ProdottoRequestDTO(
         @PositiveOrZero(message = "La quantità non può essere negativa")
         Integer quantità,
 
+        @Column(nullable = false, length = 5000)
         String descrizione,
 
         @NotNull(message = "La categoria è obbligatoria")
