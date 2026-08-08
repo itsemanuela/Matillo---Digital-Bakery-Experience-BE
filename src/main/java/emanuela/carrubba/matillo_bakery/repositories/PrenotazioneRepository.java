@@ -1,7 +1,8 @@
-package emanuela.carrubba.matillo_bakery.repository;
+package emanuela.carrubba.matillo_bakery.repositories;
 
 import emanuela.carrubba.matillo_bakery.entities.Laboratorio;
 import emanuela.carrubba.matillo_bakery.entities.Prenotazione;
+import emanuela.carrubba.matillo_bakery.entities.StatoPrenotazione;
 import emanuela.carrubba.matillo_bakery.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,4 +15,9 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, UUID
     List<Prenotazione> findByLaboratorioAndUtente(Laboratorio laboratorio, User utente);
     List<Prenotazione> findByLaboratorioAndEmailCliente(Laboratorio laboratorio, String emailCliente);
     List<Prenotazione> findByEmailCliente(String emailCliente);
+    List<Prenotazione> findByLaboratorioUuid(UUID laboratorioUuid);
+
+    List<Prenotazione> findByLaboratorioUuidAndStato(UUID laboratorioUuid, StatoPrenotazione stato);
+
+    List<Prenotazione> findByStato(StatoPrenotazione stato);
 }

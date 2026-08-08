@@ -1,9 +1,9 @@
 package emanuela.carrubba.matillo_bakery.controllers;
 
 import emanuela.carrubba.matillo_bakery.RequestDTO.PrenotazioneRequestDTO;
-import emanuela.carrubba.matillo_bakery.entities.StatoPrenotazione;
 import emanuela.carrubba.matillo_bakery.entities.Laboratorio;
 import emanuela.carrubba.matillo_bakery.entities.Prenotazione;
+import emanuela.carrubba.matillo_bakery.entities.StatoPrenotazione;
 import emanuela.carrubba.matillo_bakery.entities.User;
 import emanuela.carrubba.matillo_bakery.exceptions.QuantitaNonDisponibileException;
 import emanuela.carrubba.matillo_bakery.services.LaboratorioService;
@@ -35,8 +35,23 @@ public class PrenotazioneController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Prenotazione>> getAllPrenotazioni() {
-        return ResponseEntity.ok(prenotazioneService.trovaTutte());
+    public ResponseEntity<List<Prenotazione>> getAllPrenotazioni(
+            @RequestParam(required = false) UUID laboratorioId,
+            @RequestParam(required = false) StatoPrenotazione stato) {
+
+        List<Prenotazione> prenotazioni;
+
+        if (laboratorioId != null && stato != null) {
+            prenotazioni = prenotazioneService.trovaPerLaboratorioEStato(laboratorioId, stato);
+        } else if (laboratorioId != null) {
+            prenotazioni = prenotazioneService.trovaPerLaboratorio(laboratorioId);
+        } else if (stato != null) {
+            prenotazioni = prenotazioneService.trovaPerStato(stato);
+        } else {
+            prenotazioni = prenotazioneService.trovaTutte();
+        }
+
+        return ResponseEntity.ok(prenotazioni);
     }
 
     @GetMapping("/me")
@@ -59,47 +74,16 @@ public class PrenotazioneController {
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isLoggato = authentication != null
-                && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getPrincipal());
+        String email = authentication.getName();
+        User utente = userService.trovaPerEmail(email);
 
-        if (isBlank(dto.nomeCliente()) || isBlank(dto.cognomeCliente())
-                || isBlank(dto.emailCliente()) || isBlank(dto.telefonoCliente())) {
+        if (prenotazioneService.esistePrenotazioneAttiva(laboratorio, utente)) {
             throw new IllegalArgumentException(
-                    "Nome, cognome, email e telefono sono obbligatori per la prenotazione."
+                    "Hai già una prenotazione attiva per \"" + laboratorio.getNome() + "\"."
             );
         }
 
-        Prenotazione prenotazione;
-
-        if (isLoggato) {
-            String email = authentication.getName();
-            User utente = userService.trovaPerEmail(email);
-
-            if (prenotazioneService.esistePrenotazioneAttiva(laboratorio, utente)) {
-                throw new IllegalArgumentException(
-                        "Hai già una prenotazione attiva per \"" + laboratorio.getNome() + "\"."
-                );
-            }
-
-            prenotazione = new Prenotazione(laboratorio, utente, dto.numeroPersone());
-        } else {
-            if (prenotazioneService.esistePrenotazioneAttiva(laboratorio, dto.emailCliente())) {
-                throw new IllegalArgumentException(
-                        "Esiste già una prenotazione attiva per \"" + laboratorio.getNome() + "\" con questa email."
-                );
-            }
-
-            prenotazione = new Prenotazione(
-                    laboratorio, dto.nomeCliente(), dto.cognomeCliente(),
-                    dto.emailCliente(), dto.telefonoCliente(), dto.numeroPersone()
-            );
-        }
-
-        prenotazione.setNomeCliente(dto.nomeCliente());
-        prenotazione.setCognomeCliente(dto.cognomeCliente());
-        prenotazione.setEmailCliente(dto.emailCliente());
-        prenotazione.setTelefonoCliente(dto.telefonoCliente());
+        Prenotazione prenotazione = new Prenotazione(laboratorio, utente, dto.numeroPersone());
 
         laboratorio.setPostiDisponibili(laboratorio.getPostiDisponibili() - dto.numeroPersone());
         laboratorioService.salva(laboratorio);
@@ -110,7 +94,19 @@ public class PrenotazioneController {
 
     @PatchMapping("/{id}/cancella")
     public ResponseEntity<Prenotazione> cancellaPrenotazione(@PathVariable UUID id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User utente = userService.trovaPerEmail(email);
+
         Prenotazione prenotazione = prenotazioneService.trovaPerId(id);
+
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && !prenotazione.getUtente().equals(utente)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         if (prenotazione.getStato() != StatoPrenotazione.CANCELLATA) {
             Laboratorio laboratorio = prenotazione.getLaboratorio();
@@ -124,14 +120,15 @@ public class PrenotazioneController {
         return ResponseEntity.ok(prenotazione);
     }
 
-    private boolean isBlank(String s) {
-        return s == null || s.isBlank();
-    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Prenotazione> aggiornaPrenotazione(
+            @PathVariable UUID id,
+            @RequestBody Prenotazione datiAggiornati) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User utente = userService.trovaPerEmail(email);
 
-    @GetMapping("/cerca") //per utenti non registrati
-    public ResponseEntity<List<Prenotazione>> getPrenotazioniPerEmail(@RequestParam String email) {
-        List<Prenotazione> prenotazioni = prenotazioneService.trovaPerEmailCliente(email);
-        return ResponseEntity.ok(prenotazioni);
+        Prenotazione prenotazioneAggiornata = prenotazioneService.modificaPrenotazione(id, utente, datiAggiornati);
+        return ResponseEntity.ok(prenotazioneAggiornata);
     }
-
 }

@@ -63,14 +63,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/ordini").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/laboratori/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/prenotazioni").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/laboratori/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/laboratori/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/laboratori/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/prenotazioni").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/prenotazioni/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/prenotazioni").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/prenotazioni/me").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/prenotazioni/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/prenotazioni/**").authenticated()
 
                         // Solo ADMIN può modificare il catalogo
                         .requestMatchers(HttpMethod.POST, "/api/prodotti/**").hasRole("ADMIN")
@@ -85,7 +83,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/ordini/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/ordini/**").hasRole("ADMIN")
 
-
+                        // Tutto il resto richiede solo di essere autenticati
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

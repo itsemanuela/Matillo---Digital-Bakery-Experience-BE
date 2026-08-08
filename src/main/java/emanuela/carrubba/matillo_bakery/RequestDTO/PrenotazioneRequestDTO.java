@@ -11,11 +11,6 @@ public record PrenotazioneRequestDTO(
 
         @NotNull(message = "Il numero di persone è obbligatorio")
         @Positive(message = "Il numero di persone deve essere almeno 1")
-        Integer numeroPersone,
-
-        String nomeCliente,
-        String cognomeCliente,
-        String emailCliente,
-        String telefonoCliente
+        Integer numeroPersone
 ) {
 }
