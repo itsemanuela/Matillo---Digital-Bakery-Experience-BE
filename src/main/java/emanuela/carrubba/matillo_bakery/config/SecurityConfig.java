@@ -81,7 +81,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/ordini").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/ordini/utente/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/ordini/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/ordini/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/ordini/**").authenticated()
 
                         // Tutto il resto richiede solo di essere autenticati
                         .anyRequest().authenticated()
