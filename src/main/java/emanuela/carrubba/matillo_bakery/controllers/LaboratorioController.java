@@ -1,6 +1,6 @@
 package emanuela.carrubba.matillo_bakery.controllers;
 
-import emanuela.carrubba.matillo_bakery.RequestDTO.LaboratorioRequestDTO;
+import emanuela.carrubba.matillo_bakery.ResponseDTO.LaboratorioRequestDTO;
 import emanuela.carrubba.matillo_bakery.entities.Laboratorio;
 import emanuela.carrubba.matillo_bakery.services.FileStorageService;
 import emanuela.carrubba.matillo_bakery.services.LaboratorioService;
@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +42,9 @@ public class LaboratorioController {
                 dto.nome(), dto.descrizione(), dto.dataOra(), dto.postiTotali(), dto.prezzo()
         );
         laboratorio.setProcedimento(dto.procedimento());
+        laboratorio.setIncluso(dto.incluso());
+        laboratorio.setIstruttoreNome(dto.istruttoreNome());
+        laboratorio.setIstruttoreBio(dto.istruttoreBio());
         Laboratorio salvato = laboratorioService.salva(laboratorio);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvato);
     }
@@ -59,6 +63,9 @@ public class LaboratorioController {
         laboratorio.setPostiTotali(dto.postiTotali());
         laboratorio.setPostiDisponibili(dto.postiTotali() - postiPrenotati);
         laboratorio.setPrezzo(dto.prezzo());
+        laboratorio.setIncluso(dto.incluso());
+        laboratorio.setIstruttoreNome(dto.istruttoreNome());
+        laboratorio.setIstruttoreBio(dto.istruttoreBio());
 
         Laboratorio salvato = laboratorioService.salva(laboratorio);
         return ResponseEntity.ok(salvato);
@@ -75,9 +82,57 @@ public class LaboratorioController {
         return ResponseEntity.ok(aggiornato);
     }
 
+    @PostMapping("/{id}/galleria")
+    public ResponseEntity<Laboratorio> uploadGalleria(
+            @PathVariable UUID id, @RequestParam("files") List<MultipartFile> files) {
+
+        Laboratorio laboratorio = laboratorioService.trovaPerId(id);
+        List<String> urls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            urls.add(fileStorageService.storeFile(file));
+        }
+        laboratorio.setGalleria(String.join(",", urls));
+        Laboratorio aggiornato = laboratorioService.salva(laboratorio);
+        return ResponseEntity.ok(aggiornato);
+    }
+
+    @PostMapping("/{id}/istruttore-foto")
+    public ResponseEntity<Laboratorio> uploadFotoIstruttore(
+            @PathVariable UUID id, @RequestParam("file") MultipartFile file) {
+
+        Laboratorio laboratorio = laboratorioService.trovaPerId(id);
+        String url = fileStorageService.storeFile(file);
+        laboratorio.setIstruttoreFoto(url);
+        Laboratorio aggiornato = laboratorioService.salva(laboratorio);
+        return ResponseEntity.ok(aggiornato);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLaboratorio(@PathVariable UUID id) {
         laboratorioService.elimina(id);
         return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/{id}/immagine")
+    public ResponseEntity<Laboratorio> deleteImmagine(@PathVariable UUID id) {
+        Laboratorio laboratorio = laboratorioService.trovaPerId(id);
+        laboratorio.setImmagine(null);
+        Laboratorio aggiornato = laboratorioService.salva(laboratorio);
+        return ResponseEntity.ok(aggiornato);
+    }
+
+    @DeleteMapping("/{id}/galleria")
+    public ResponseEntity<Laboratorio> deleteGalleria(@PathVariable UUID id) {
+        Laboratorio laboratorio = laboratorioService.trovaPerId(id);
+        laboratorio.setGalleria(null);
+        Laboratorio aggiornato = laboratorioService.salva(laboratorio);
+        return ResponseEntity.ok(aggiornato);
+    }
+
+    @DeleteMapping("/{id}/istruttore-foto")
+    public ResponseEntity<Laboratorio> deleteFotoIstruttore(@PathVariable UUID id) {
+        Laboratorio laboratorio = laboratorioService.trovaPerId(id);
+        laboratorio.setIstruttoreFoto(null);
+        Laboratorio aggiornato = laboratorioService.salva(laboratorio);
+        return ResponseEntity.ok(aggiornato);
     }
 }

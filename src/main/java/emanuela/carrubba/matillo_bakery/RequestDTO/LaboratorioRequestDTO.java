@@ -1,4 +1,4 @@
-package emanuela.carrubba.matillo_bakery.RequestDTO;
+package emanuela.carrubba.matillo_bakery.ResponseDTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +14,10 @@ public record LaboratorioRequestDTO(
         String descrizione,
 
         String procedimento,
+
+        String incluso,
+        String istruttoreNome,
+        String istruttoreBio,
 
         @NotNull(message = "Data e ora sono obbligatorie")
         LocalDateTime dataOra,

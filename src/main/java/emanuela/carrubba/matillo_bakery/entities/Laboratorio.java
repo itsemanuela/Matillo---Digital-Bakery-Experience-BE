@@ -22,6 +22,18 @@ public class Laboratorio {
     @Column(columnDefinition = "TEXT")
     private String procedimento;
 
+    @Column(columnDefinition = "TEXT")
+    private String incluso;
+
+    @Column(name = "istruttore_nome")
+    private String istruttoreNome;
+
+    @Column(name = "istruttore_bio", columnDefinition = "TEXT")
+    private String istruttoreBio;
+
+    @Column(name = "istruttore_foto")
+    private String istruttoreFoto;
+
     @Column(name = "data_ora", nullable = false)
     private LocalDateTime dataOra;
 
@@ -35,6 +47,9 @@ public class Laboratorio {
     private double prezzo;
 
     private String immagine;
+
+    @Column(columnDefinition = "TEXT")
+    private String galleria;
 
     public Laboratorio() {}
 
@@ -79,6 +94,38 @@ public class Laboratorio {
         this.procedimento = procedimento;
     }
 
+    public String getIncluso() {
+        return incluso;
+    }
+
+    public void setIncluso(String incluso) {
+        this.incluso = incluso;
+    }
+
+    public String getIstruttoreNome() {
+        return istruttoreNome;
+    }
+
+    public void setIstruttoreNome(String istruttoreNome) {
+        this.istruttoreNome = istruttoreNome;
+    }
+
+    public String getIstruttoreBio() {
+        return istruttoreBio;
+    }
+
+    public void setIstruttoreBio(String istruttoreBio) {
+        this.istruttoreBio = istruttoreBio;
+    }
+
+    public String getIstruttoreFoto() {
+        return istruttoreFoto;
+    }
+
+    public void setIstruttoreFoto(String istruttoreFoto) {
+        this.istruttoreFoto = istruttoreFoto;
+    }
+
     public LocalDateTime getDataOra() {
         return dataOra;
     }
@@ -117,5 +164,13 @@ public class Laboratorio {
 
     public void setImmagine(String immagine) {
         this.immagine = immagine;
+    }
+
+    public String getGalleria() {
+        return galleria;
+    }
+
+    public void setGalleria(String galleria) {
+        this.galleria = galleria;
     }
 }
