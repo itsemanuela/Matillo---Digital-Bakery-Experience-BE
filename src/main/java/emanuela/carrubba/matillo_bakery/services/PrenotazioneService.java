@@ -46,4 +46,7 @@ public class PrenotazioneService {
         return prenotazioneRepository.findByLaboratorioAndEmailCliente(laboratorio, emailCliente).stream()
                 .anyMatch(p -> p.getStato() != StatoPrenotazione.CANCELLATA);
     }
+    public List<Prenotazione> trovaPerEmailCliente(String emailCliente) {
+        return prenotazioneRepository.findByEmailCliente(emailCliente);
+    }
 }

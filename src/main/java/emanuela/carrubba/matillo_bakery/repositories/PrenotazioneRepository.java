@@ -13,4 +13,5 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, UUID
     List<Prenotazione> findByLaboratorio(Laboratorio laboratorio);
     List<Prenotazione> findByLaboratorioAndUtente(Laboratorio laboratorio, User utente);
     List<Prenotazione> findByLaboratorioAndEmailCliente(Laboratorio laboratorio, String emailCliente);
+    List<Prenotazione> findByEmailCliente(String emailCliente);
 }

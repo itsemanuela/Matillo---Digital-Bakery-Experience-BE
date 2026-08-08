@@ -127,4 +127,11 @@ public class PrenotazioneController {
     private boolean isBlank(String s) {
         return s == null || s.isBlank();
     }
+
+    @GetMapping("/cerca") //per utenti non registrati
+    public ResponseEntity<List<Prenotazione>> getPrenotazioniPerEmail(@RequestParam String email) {
+        List<Prenotazione> prenotazioni = prenotazioneService.trovaPerEmailCliente(email);
+        return ResponseEntity.ok(prenotazioni);
+    }
+
 }

@@ -69,6 +69,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/laboratori/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/prenotazioni").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/prenotazioni/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/prenotazioni").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/prenotazioni/me").authenticated()
 
                         // Solo ADMIN può modificare il catalogo
                         .requestMatchers(HttpMethod.POST, "/api/prodotti/**").hasRole("ADMIN")

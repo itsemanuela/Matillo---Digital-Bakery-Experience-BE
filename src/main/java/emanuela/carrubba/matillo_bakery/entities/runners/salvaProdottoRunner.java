@@ -1,7 +1,6 @@
-
-
 package emanuela.carrubba.matillo_bakery.entities.runners;
 
+/*
 import emanuela.carrubba.matillo_bakery.entities.Categoria;
 import emanuela.carrubba.matillo_bakery.entities.Prodotto;
 import emanuela.carrubba.matillo_bakery.services.ProdottoService;
@@ -33,3 +32,4 @@ public class salvaProdottoRunner implements CommandLineRunner {
         System.out.println("Prodotto salvato con successo! ID:" + prodottoSalvato.getUuid() + " " +  prodottoSalvato.getNome());
     }
 }
+*/
