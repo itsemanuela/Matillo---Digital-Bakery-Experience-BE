@@ -33,7 +33,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // TODO: aggiungere qui anche i domini reali quando fai il deploy
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://127.0.0.1:5173"
@@ -55,11 +54,9 @@ public class SecurityConfig {
 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Pubblici: chiunque può leggere il catalogo, registrarsi, fare login
                         .requestMatchers(HttpMethod.GET, "/api/prodotti/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/utenti").permitAll()
-                        // Checkout ospite: la creazione di un ordine non richiede login.
                         .requestMatchers(HttpMethod.POST, "/api/ordini").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/laboratori/**").permitAll()
@@ -70,20 +67,24 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/prenotazioni/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/prenotazioni/**").authenticated()
 
-                        // Solo ADMIN può modificare il catalogo
+                        .requestMatchers(HttpMethod.GET, "/api/catering/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/richieste-catering").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/catering/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/catering/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/catering/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/richieste-catering").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/richieste-catering/**").hasRole("ADMIN")
+
                         .requestMatchers(HttpMethod.POST, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/prodotti/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/prodotti/**").hasRole("ADMIN")
-
-                        // Solo ADMIN può vedere TUTTI gli ordini, cercare gli ordini
 
                         .requestMatchers(HttpMethod.GET, "/api/ordini").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/ordini/utente/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/ordini/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/ordini/**").authenticated()
 
-                        // Tutto il resto richiede solo di essere autenticati
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
