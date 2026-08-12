@@ -15,7 +15,7 @@ public class Ordine {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uuid;
 
-    // Utente che ha effettuato l'ordine — NULLABLE: un ordine da ospite
+
     // (senza login) non ha nessun utente collegato.
     @ManyToOne
     @JoinColumn(name = "utente_uuid", nullable = true)

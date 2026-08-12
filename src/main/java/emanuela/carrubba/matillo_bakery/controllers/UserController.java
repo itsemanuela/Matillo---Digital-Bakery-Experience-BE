@@ -47,6 +47,15 @@ public class UserController {
         return ResponseEntity.ok(utente);
     }
 
+    // GET /api/utenti/esiste?email=... — pubblico
+    // Usato dal checkout per
+    // impedire il codice sconto di benvenuto a chi ha già un account,
+    // anche se sta ordinando come ospite con quella stessa email.
+    @GetMapping("/esiste")
+    public ResponseEntity<Boolean> esisteEmail(@RequestParam String email) {
+        return ResponseEntity.ok(userService.esisteEmail(email));
+    }
+
     // POST /api/utenti — crea un nuovo utente
     //  BCrypt prima del salvataggio:
 
