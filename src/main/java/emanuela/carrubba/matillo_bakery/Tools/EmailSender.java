@@ -13,10 +13,14 @@ import java.util.UUID;
 public class EmailSender {
     private final String domainName;
     private final String apiKey;
+    private final String frontendUrl;
 
-    public EmailSender(@Value("${mailgun.domain}") String domainName, @Value("${mailgun.api.key}") String apiKey) {
+    public EmailSender(@Value("${mailgun.domain}") String domainName,
+                       @Value("${mailgun.api.key}") String apiKey,
+                       @Value("${app.frontend.url:http://localhost:5173}") String frontendUrl) {
         this.domainName = domainName;
         this.apiKey = apiKey;
+        this.frontendUrl = frontendUrl;
     }
 
     public void sendCustomRegistrationEmail(User recipient, String messaggioPersonalizzato) {
@@ -117,6 +121,83 @@ public class EmailSender {
                 .asJson();
 
         logRisposta("conferma ordine #" + idOrdine, response);
+    }
+
+    // Email di recupero password: link con il token verso la pagina
+    // ResetPassword.jsx del frontend, valido 30 minuti (vedi UserService).
+    public void sendPasswordResetEmail(String recipientEmail, String nomeCliente, String token) {
+
+        String linkReset = this.frontendUrl + "/reset-password?token=" + token;
+
+        String htmlEmail = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <title>Reimposta la password - Antico Forno Matillo</title>
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #f4f1ea; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%%" style="background-color: #f4f1ea; padding: 40px 0;">
+                <tr>
+                  <td align="center">
+                    <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+
+                      <!-- Header -->
+                      <tr>
+                        <td style="background-color: #221915; padding: 35px; text-align: center;">
+                          <span style="color: #EED972; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;">Antico Forno Matillo • Dal 1943</span>
+                          <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-family: serif;">Reimposta la tua password, %s</h1>
+                        </td>
+                      </tr>
+
+                      <!-- Contenuto -->
+                      <tr>
+                        <td style="padding: 40px 30px;">
+                          <p style="color: #555; font-size: 15px; line-height: 1.6; margin-top: 0;">
+                            Hai chiesto di reimpostare la password del tuo account. Clicca sul pulsante qui sotto per sceglierne una nuova: il link è valido per 30 minuti.
+                          </p>
+
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%%" style="margin-top: 30px;">
+                            <tr>
+                              <td align="center">
+                                <a href="%s" style="display: inline-block; background-color: #EED972; color: #221915; text-decoration: none; font-weight: bold; font-size: 15px; padding: 14px 32px; border-radius: 8px;">Reimposta password</a>
+                              </td>
+                            </tr>
+                          </table>
+
+                          <div style="background-color: #fcfbfa; border-left: 4px solid #EED972; padding: 15px; margin-top: 30px; border-radius: 4px;">
+                            <p style="margin: 0; color: #666; font-size: 13px; line-height: 1.4;">
+                              Se non hai richiesto tu il reset, ignora semplicemente questa email: la tua password resterà invariata.
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <!-- Footer -->
+                      <tr>
+                        <td style="background-color: #f9f6f0; padding: 20px; text-align: center; color: #888; font-size: 12px;">
+                          <p style="margin: 0;">Antico Forno Matillo • Tutti i diritti riservati</p>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>
+            """.formatted(nomeCliente, linkReset);
+
+        HttpResponse<JsonNode> response = Unirest.post("https://api.mailgun.net/v3/" + this.domainName + "/messages")
+                .basicAuth("api", this.apiKey)
+                .field("from", "admin@" + this.domainName)
+                .field("to", recipientEmail)
+                .field("subject", "Reimposta la tua password - Antico Forno Matillo")
+                .field("html", htmlEmail)
+                .field("o:tracking-clicks", "no")
+                .asJson();
+
+        logRisposta("reset password", response);
     }
 
 

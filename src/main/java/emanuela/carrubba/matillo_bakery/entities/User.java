@@ -47,6 +47,16 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // Recupero password: token temporaneo generato su richiesta,
+    // valido solo entro resetTokenScadenza, cancellato dopo l'uso.
+    @Column(name = "reset_token")
+    @JsonIgnore
+    private String resetToken;
+
+    @Column(name = "reset_token_scadenza")
+    @JsonIgnore
+    private LocalDateTime resetTokenScadenza;
+
 
     public User() {
     }
@@ -146,6 +156,22 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public LocalDateTime getResetTokenScadenza() {
+        return resetTokenScadenza;
+    }
+
+    public void setResetTokenScadenza(LocalDateTime resetTokenScadenza) {
+        this.resetTokenScadenza = resetTokenScadenza;
     }
 
     @Override
