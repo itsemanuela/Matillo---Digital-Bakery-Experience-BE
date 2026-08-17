@@ -59,8 +59,11 @@ public class PagamentoController {
                 .setCancelUrl(frontendUrl + "/checkout")
                 .putMetadata("ordineId", ordine.getUuid().toString());
 
+        boolean scontoApplicato = ordine.getNote() != null && ordine.getNote().contains("BENVENUTO10");
+        double moltiplicatore = scontoApplicato ? 0.9 : 1.0;
+
         for (DettaglioOrdine dettaglio : ordine.getDettagli()) {
-            long prezzoInCentesimi = Math.round(dettaglio.getPrezzoUnitario() * 100);
+            long prezzoInCentesimi = Math.round(dettaglio.getPrezzoUnitario() * moltiplicatore * 100);
 
             paramsBuilder.addLineItem(
                     SessionCreateParams.LineItem.builder()

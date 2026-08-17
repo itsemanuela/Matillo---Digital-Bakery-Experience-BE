@@ -1,7 +1,8 @@
 package emanuela.carrubba.matillo_bakery.services;
 
-import emanuela.carrubba.matillo_bakery.StatoOrdine;
+import emanuela.carrubba.matillo_bakery.entities.DettaglioOrdine;
 import emanuela.carrubba.matillo_bakery.entities.Ordine;
+import emanuela.carrubba.matillo_bakery.entities.Prodotto;
 import emanuela.carrubba.matillo_bakery.entities.User;
 import emanuela.carrubba.matillo_bakery.StatoOrdine;
 import emanuela.carrubba.matillo_bakery.exceptions.NotFoundException;
@@ -15,9 +16,11 @@ import java.util.UUID;
 public class OrdineService {
 
     private final OrdineRepository ordineRepository;
+    private final ProdottoService prodottoService;
 
-    public OrdineService(OrdineRepository ordineRepository) {
+    public OrdineService(OrdineRepository ordineRepository, ProdottoService prodottoService) {
         this.ordineRepository = ordineRepository;
+        this.prodottoService = prodottoService;
     }
 
     public List<Ordine> trovaTutti() {
@@ -51,9 +54,21 @@ public class OrdineService {
         return ordineRepository.save(ordine);
     }
 
-    // Soft delete
+    // Soft delete: l'ordine resta nel DB
     public void elimina(UUID uuid) {
         Ordine ordine = trovaPerId(uuid);
+
+
+        if (ordine.getStato() == StatoOrdine.CANCELLATO) {
+            return;
+        }
+
+        for (DettaglioOrdine dettaglio : ordine.getDettagli()) {
+            Prodotto prodotto = dettaglio.getProdotto();
+            prodotto.setQuantità(prodotto.getQuantità() + dettaglio.getQuantita());
+            prodottoService.salvaProdotto(prodotto);
+        }
+
         ordine.setStato(StatoOrdine.CANCELLATO);
         ordineRepository.save(ordine);
     }
