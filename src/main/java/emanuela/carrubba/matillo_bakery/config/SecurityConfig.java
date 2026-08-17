@@ -62,6 +62,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/utenti/esiste").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/ordini").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ordini/stato").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/pagamenti/crea-sessione/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/pagamenti/webhook").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/laboratori/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/laboratori/**").hasRole("ADMIN")
