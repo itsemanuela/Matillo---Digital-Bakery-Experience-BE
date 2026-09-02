@@ -66,7 +66,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/pagamenti/crea-sessione/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/pagamenti/webhook").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/laboratori/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/laboratori", "/api/laboratori/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/laboratori/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/laboratori/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/laboratori/**").hasRole("ADMIN")
@@ -74,7 +75,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/prenotazioni/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/prenotazioni/**").authenticated()
 
-                        .requestMatchers(HttpMethod.GET, "/api/catering/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/catering", "/api/catering/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/richieste-catering").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/catering/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/catering/**").hasRole("ADMIN")
@@ -82,7 +83,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/richieste-catering").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/richieste-catering/**").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.GET, "/api/galleria-eventi/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/galleria-eventi", "/api/galleria-eventi/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/galleria-eventi/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/galleria-eventi/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/galleria-eventi/**").hasRole("ADMIN")
